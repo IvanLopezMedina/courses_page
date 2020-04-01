@@ -4,9 +4,10 @@ import {loadCourses} from '../../redux/actions/courseActions';
 import {loadAuthors} from '../../redux/actions/authorActions';
 import PropTypes from 'prop-types';
 import CourseList from './CourseList';
+import Spinner from './../common/Spinner';
 import {Redirect} from 'react-router-dom';
 
-const CoursesPage = ({courses, authors, loadCourses, loadAuthors}) => {
+const CoursesPage = ({courses, authors, loadCourses, loadAuthors, loading}) => {
   const [redirectToAddCoursePage, setRedirectToAddCoursePage] = useState(false);
 
   useEffect(() => {
@@ -21,20 +22,27 @@ const CoursesPage = ({courses, authors, loadCourses, loadAuthors}) => {
         alert('Loading authors failed' + error);
       });
     }
-  });
+  }, []);
 
   return (
     <>
       {redirectToAddCoursePage && <Redirect to="/course/" />}
       <h2>Courses</h2>
-      <button
-        style={{marginBottom: 20}}
-        className="btn btn-primary add-course"
-        onClick={() => setRedirectToAddCoursePage(true)}
-      >
-        Add Course
-      </button>
-      <CourseList courses={courses} />
+      {loading ? (
+        <Spinner />
+      ) : (
+        <>
+          <button
+            style={{marginBottom: 20}}
+            className="btn btn-primary add-course"
+            onClick={() => setRedirectToAddCoursePage(true)}
+          >
+            Add Course
+          </button>
+
+          <CourseList courses={courses} />
+        </>
+      )}
     </>
   );
 };
@@ -44,9 +52,11 @@ CoursesPage.propTypes = {
   authors: PropTypes.array.isRequired,
   loadCourses: PropTypes.func.isRequired,
   loadAuthors: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = state => {
+  debugger;
   return {
     courses:
       state.authors.length === 0
@@ -59,6 +69,7 @@ const mapStateToProps = state => {
             };
           }),
     authors: state.authors,
+    loading: state.apiCallsInProgress > 0,
   };
 };
 
