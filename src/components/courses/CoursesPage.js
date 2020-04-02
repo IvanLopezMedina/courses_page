@@ -1,13 +1,21 @@
 import React, {useState, useEffect} from 'react';
 import {connect} from 'react-redux';
-import {loadCourses} from '../../redux/actions/courseActions';
+import {loadCourses, deleteCourse} from '../../redux/actions/courseActions';
 import {loadAuthors} from '../../redux/actions/authorActions';
 import PropTypes from 'prop-types';
 import CourseList from './CourseList';
 import Spinner from './../common/Spinner';
 import {Redirect} from 'react-router-dom';
+import {toast} from 'react-toastify';
 
-const CoursesPage = ({courses, authors, loadCourses, loadAuthors, loading}) => {
+const CoursesPage = ({
+  courses,
+  authors,
+  loadCourses,
+  loadAuthors,
+  deleteCourse,
+  loading,
+}) => {
   const [redirectToAddCoursePage, setRedirectToAddCoursePage] = useState(false);
 
   useEffect(() => {
@@ -23,6 +31,15 @@ const CoursesPage = ({courses, authors, loadCourses, loadAuthors, loading}) => {
       });
     }
   }, []);
+
+  const handleDeleteCourse = async course => {
+    toast.success('Course deleted');
+    try {
+      await deleteCourse(course);
+    } catch (error) {
+      toast.error('Delete failed.' + error.message, {autoClose: false});
+    }
+  };
 
   return (
     <>
@@ -40,7 +57,7 @@ const CoursesPage = ({courses, authors, loadCourses, loadAuthors, loading}) => {
             Add Course
           </button>
 
-          <CourseList courses={courses} />
+          <CourseList onDeleteClick={handleDeleteCourse} courses={courses} />
         </>
       )}
     </>
@@ -51,12 +68,12 @@ CoursesPage.propTypes = {
   courses: PropTypes.array.isRequired,
   authors: PropTypes.array.isRequired,
   loadCourses: PropTypes.func.isRequired,
+  deleteCourse: PropTypes.func.isRequired,
   loadAuthors: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
 };
 
 const mapStateToProps = state => {
-  debugger;
   return {
     courses:
       state.authors.length === 0
@@ -76,6 +93,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = {
   loadCourses,
   loadAuthors,
+  deleteCourse,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(CoursesPage);
