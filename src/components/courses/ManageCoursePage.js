@@ -8,7 +8,7 @@ import Spinner from './../common/Spinner';
 import {newCourse} from '../../../tools/mockData';
 import {toast} from 'react-toastify';
 
-const ManageCoursesPage = ({
+export const ManageCoursePage = ({
   courses,
   authors,
   loadAuthors,
@@ -23,7 +23,7 @@ const ManageCoursesPage = ({
 
   useEffect(() => {
     if (courses.length === 0) {
-      loadCourses().catch(error => {
+      loadCourses().catch((error) => {
         alert('Loading courses failed' + error);
       });
     } else {
@@ -31,15 +31,15 @@ const ManageCoursesPage = ({
     }
 
     if (authors.length === 0) {
-      loadAuthors().catch(error => {
+      loadAuthors().catch((error) => {
         alert('Loading authors failed' + error);
       });
     }
   }, [props.course]);
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     const {name, value} = event.target;
-    setCourse(prevCourse => ({
+    setCourse((prevCourse) => ({
       ...prevCourse,
       [name]: name === 'authorId' ? parseInt(value, 10) : value,
     }));
@@ -58,7 +58,7 @@ const ManageCoursesPage = ({
     return Object.keys(errors).length === 0;
   };
 
-  const handleSave = event => {
+  const handleSave = (event) => {
     event.preventDefault();
     if (!formIsValid()) return;
     setSaving(true);
@@ -67,7 +67,7 @@ const ManageCoursesPage = ({
         toast.success('Course saved.');
         history.push('/courses');
       })
-      .catch(error => {
+      .catch((error) => {
         setSaving(false);
         setErrors({onSave: error.message});
       });
@@ -87,7 +87,7 @@ const ManageCoursesPage = ({
   );
 };
 
-ManageCoursesPage.propTypes = {
+ManageCoursePage.propTypes = {
   course: PropTypes.object.isRequired,
   courses: PropTypes.array.isRequired,
   authors: PropTypes.array.isRequired,
@@ -99,7 +99,7 @@ ManageCoursesPage.propTypes = {
 
 // This could be called in the reducer for a easy reuse
 const getCourseBySlug = (courses, slug) => {
-  return courses.find(course => course.slug === slug) || null;
+  return courses.find((course) => course.slug === slug) || null;
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -122,4 +122,4 @@ const mapDispatchToProps = {
   saveCourse,
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ManageCoursesPage);
+export default connect(mapStateToProps, mapDispatchToProps)(ManageCoursePage);
